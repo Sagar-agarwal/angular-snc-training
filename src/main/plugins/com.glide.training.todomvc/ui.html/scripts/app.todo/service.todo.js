@@ -11,21 +11,30 @@ angular.module('todo').factory('taskFactory', function() {
 	}
 })
 
-angular.module('todo').factory('TaskRecorder', function($resource, taskFactory){
+angular.module('todo').factory('taskRepository', function($resource, taskFactory){
 	var that = {};
 	var resource = $resource('http://localhost:8080/api/now/table/todo/:sysId', {sysId: '@sysId'}, { 
 		'get':		{method:'GET'},
 		'post':		{method:'POST'},
 		'put':		{method:'PUT'},
-		'delete':	{method:'DELETE'},
-		'patch':	{method: 'PATCH'} 
+		'delete':	{method:'DELETE'} 
 	});
+	
+	var mapTaskToTodo = function(task, todo){
+		todo = todo || {};
+		todo.iscomplete = task.complete;
+		todo.sys_id = task.sysId;
+		todo.title = task.title;
+		return todo;
+	}
 	
 	that.getAllTasks = function(){
 		return resource.get().$promise.then(function(data){
 			var tasks = [];
-			data.result.forEach(function(demoTask) {
-				tasks.push(taskFactory.newTask(demoTask.title, demoTask.iscomplete === 'true'));
+			data.result.forEach(function(todo) {
+				var newTask = taskFactory.newTask(todo.title, todo.iscomplete === 'true');
+				newTask.sysId = todo.sys_id;
+				tasks.push(newTask);
 			});
 			return tasks;
 		});
@@ -38,22 +47,29 @@ angular.module('todo').factory('TaskRecorder', function($resource, taskFactory){
 	};
 	
 	that.addTask = function(task){
-		return resource.post(todo);
+		var todo = mapTaskToTodo(task);
+		
+		return resource.post({}, todo).$promise.then(function(data){
+			var task = taskFactory.newTask(data.result.title, data.result.iscomplete === 'true');
+			task.sysId = data.result.sys_id;
+			return task; 
+		});
 	};
 	
 	that.editTask = function(task){
-		var todo = {
-				sys_id: task.sysId,
-				title: task.title,
-				iscomplete: task.complete
-		};
+		var todo = mapTaskToTodo(task);
 		
 		return resource.put({sysId:task.sysId}, todo).$promise.then(function(data){
 			return taskFactory.newTask(data.result.title, data.result.iscomplete === 'true'); 
 		});
 	};
 	
-	//that.deleteTask
+	that.deleteTask = function(task){
+		
+		return resource.delete({sysId:task.sysId}).$promise.then(function(data){
+			//return taskFactory.newTask(data.result.title, data.result.iscomplete === 'true'); 
+		});
+	};
 	
 	return that;
 });

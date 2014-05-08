@@ -1,4 +1,4 @@
-angular.module('todo').controller('Todo', function($scope, $location, $http, TaskRecorder) {
+angular.module('todo').controller('Todo', function($scope, $location, $http, taskRepository) {
 	"use strict";
 
 	$scope.newTask = '';
@@ -39,17 +39,24 @@ angular.module('todo').controller('Todo', function($scope, $location, $http, Tas
 				});
 			});*/
 		
-		TaskRecorder.getAllTasks().then(function(result) {
+		taskRepository.getAllTasks().then(function(result) {
+			result.forEach(function(task) {
+				$scope.taskList.push(task);
+			});
 			console.log("Result: ", result);
 		});
 		
 		//console.log(Todo.getAllTasks());
-		TaskRecorder.getTask("2794f421d7202100b0b044580e610398").then(function(result){
+		taskRepository.getTask("2794f421d7202100b0b044580e610398").then(function(result){
 			console.log("Result: ", result);
 		});
 		
-		TaskRecorder.editTask({complete: true, title: "Make a Todo List", sysId: "2794f421d7202100b0b044580e610398"}).then(function(result){
+		taskRepository.editTask({complete: true, title: "Make a Todo List", sysId: "2794f421d7202100b0b044580e610398"}).then(function(result){
 			console.log("Result: ", result);
+		});
+		
+		taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(data){
+			console.log("Result", data);
 		});
 	};
 
