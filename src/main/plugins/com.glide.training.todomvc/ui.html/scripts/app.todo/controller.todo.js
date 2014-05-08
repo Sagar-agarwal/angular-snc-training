@@ -1,4 +1,4 @@
-angular.module('todo').controller('Todo', function($scope, $location, $http) {
+angular.module('todo').controller('Todo', function($scope, $location, $http, TaskRecorder) {
 	"use strict";
 
 	$scope.newTask = '';
@@ -30,14 +30,27 @@ angular.module('todo').controller('Todo', function($scope, $location, $http) {
 	};
 
 	$scope.loadDemoData = function() {
-		$http.get('/api/now/table/todo_sample').
+		/*$http.get('/api/now/table/todo_sample').
 			success(function(data) {
 				var result = data.result;
 				result.forEach(function(demoTask) {
 					var task = newTask(demoTask.title, demoTask.iscomplete === 'true');
 					$scope.taskList.push(task);
 				});
-			});
+			});*/
+		
+		TaskRecorder.getAllTasks().then(function(result) {
+			console.log("Result: ", result);
+		});
+		
+		//console.log(Todo.getAllTasks());
+		TaskRecorder.getTask("2794f421d7202100b0b044580e610398").then(function(result){
+			console.log("Result: ", result);
+		});
+		
+		TaskRecorder.editTask({complete: true, title: "Make a Todo List", sysId: "2794f421d7202100b0b044580e610398"}).then(function(result){
+			console.log("Result: ", result);
+		});
 	};
 
 	$scope.$watch('allComplete', function(newStatus) {
