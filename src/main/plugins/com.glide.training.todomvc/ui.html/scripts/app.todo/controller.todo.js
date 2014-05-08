@@ -11,15 +11,27 @@ angular.module('todo').controller('Todo', function($scope, $location, $http, tas
 
 	$scope.addTask = function() {
 		var title = $scope.newTask.trim();
-		if (title)
-			$scope.taskList.push(newTask(title));
+		if (title){
+			var newTask = newTask(title);
+			$scope.taskList.push(newTask);
+			
+			taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(task){
+				newTask.sysId = task.sysId;
+			}, function(response){
+				alert("Failed to add task");
+			});
+		}
 		$scope.newTask = '';
 	};
 
 	$scope.deleteTask = function(task) {
-		var idx = $scope.taskList.indexOf(task);
-		if (idx >= 0)
-			$scope.taskList.splice(idx, 1);
+		if (task.sysId){
+			taskRepository.deleteTask(task).then(function (data){
+				var idx = $scope.taskList.indexOf(task);
+				if (idx >= 0)
+					$scope.taskList.splice(idx, 1);
+			}, function (data){console.log("fail", data)});
+		}
 	};
 
 	$scope.deleteCompleted = function() {
@@ -37,7 +49,7 @@ angular.module('todo').controller('Todo', function($scope, $location, $http, tas
 			});
 			console.log("Result: ", tasks);
 		});
-		
+		/*
 		taskRepository.getTask("2794f421d7202100b0b044580e610398").then(function(task){
 			//console.log("Task: ", result);
 		});
@@ -48,9 +60,15 @@ angular.module('todo').controller('Todo', function($scope, $location, $http, tas
 		
 		taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(task){
 			//console.log("Result", data);
-		});
+		});*/
 		
-		taskRepository.deleteTask({sysId:"4f2315b9d7202100b0b044580e610389"});
+		/*taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(task){
+			console.log("Success", task);
+		}, function(response){
+			console.log("Fail", response);
+		});*/
+		
+		//taskRepository.deleteTask("").then(function (data){console.log("success", data)}, function (data){console.log("fail", data)});
 	};
 
 	$scope.$watch('allComplete', function(newStatus) {

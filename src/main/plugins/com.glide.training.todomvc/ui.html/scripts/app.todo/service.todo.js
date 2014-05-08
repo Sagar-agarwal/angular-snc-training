@@ -14,7 +14,7 @@ angular.module('todo').factory('taskFactory', function() {
 angular.module('todo').factory('taskRepository', function($resource, taskFactory){
 	var that = {};
 	var resource = $resource('http://localhost:8080/api/now/table/todo/:sysId', {sysId: '@sysId'}, { 
-		'get':		{method:'GET'},
+		'get':		{method:'GET', params: {sysparm_query : "ORDERBYsys_created_on"}},
 		'post':		{method:'POST'},
 		'put':		{method:'PUT'},
 		'delete':	{method:'DELETE'} 
