@@ -66,9 +66,7 @@ angular.module('todo').factory('taskRepository', function($resource, taskFactory
 	
 	that.deleteTask = function(task){
 		
-		return resource.delete({sysId:task.sysId}).$promise.then(function(data){
-			//return taskFactory.newTask(data.result.title, data.result.iscomplete === 'true'); 
-		});
+		return resource.delete({sysId:task.sysId}).$promise;
 	};
 	
 	return that;

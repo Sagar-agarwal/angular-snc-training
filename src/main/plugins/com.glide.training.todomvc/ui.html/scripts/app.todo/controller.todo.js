@@ -30,34 +30,27 @@ angular.module('todo').controller('Todo', function($scope, $location, $http, tas
 	};
 
 	$scope.loadDemoData = function() {
-		/*$http.get('/api/now/table/todo_sample').
-			success(function(data) {
-				var result = data.result;
-				result.forEach(function(demoTask) {
-					var task = newTask(demoTask.title, demoTask.iscomplete === 'true');
-					$scope.taskList.push(task);
-				});
-			});*/
 		
-		taskRepository.getAllTasks().then(function(result) {
-			result.forEach(function(task) {
+		taskRepository.getAllTasks().then(function(tasks) {
+			tasks.forEach(function(task) {
 				$scope.taskList.push(task);
 			});
-			console.log("Result: ", result);
+			console.log("Result: ", tasks);
 		});
 		
-		//console.log(Todo.getAllTasks());
-		taskRepository.getTask("2794f421d7202100b0b044580e610398").then(function(result){
-			console.log("Result: ", result);
+		taskRepository.getTask("2794f421d7202100b0b044580e610398").then(function(task){
+			//console.log("Task: ", result);
 		});
 		
-		taskRepository.editTask({complete: true, title: "Make a Todo List", sysId: "2794f421d7202100b0b044580e610398"}).then(function(result){
-			console.log("Result: ", result);
+		taskRepository.editTask({complete: true, title: "Make a Todo List", sysId: "2794f421d7202100b0b044580e610398"}).then(function(task){
+			//console.log("Result: ", result);
 		});
 		
-		taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(data){
-			console.log("Result", data);
+		taskRepository.addTask({complete: false, title: "Make a Todo List"}).then(function(task){
+			//console.log("Result", data);
 		});
+		
+		taskRepository.deleteTask({sysId:"4f2315b9d7202100b0b044580e610389"});
 	};
 
 	$scope.$watch('allComplete', function(newStatus) {
